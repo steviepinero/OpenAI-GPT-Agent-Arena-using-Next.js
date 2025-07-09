@@ -130,7 +130,7 @@ export default function AutoSolve() {
           <p className="text-sm text-gray-500 mt-1">This is an AI-powered discussion panel featuring three unique agents.          </p>
           <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
             <p className="text-sm text-gray-700 leading-relaxed">
-              Simply type your question or topic below, and watch as the agents engage in a dynamic conversation, building on each other's thoughts and perspectives.
+              Simply type your question or topic below, and watch as the agents engage in a dynamic conversation, building on each others thoughts and perspectives.
             </p>
           </div>
         </div>
