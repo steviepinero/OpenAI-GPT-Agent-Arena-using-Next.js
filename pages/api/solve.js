@@ -21,30 +21,56 @@ const AGENTS = [
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
 
-  const { goal, selectedAgents } = req.body;
-  if (!goal || !selectedAgents) return res.status(400).json({ error: "Missing goal or selected agents" });
+  const { history, selectedAgents } = req.body;
+  if (!history || !selectedAgents) return res.status(400).json({ error: "Missing history or selected agents" });
 
   try {
     const filteredAgents = AGENTS.filter((a) => selectedAgents.includes(a.name));
     const thoughts = [];
 
-    for (let i = 0; i < filteredAgents.length; i++) {
-      const currentAgent = filteredAgents[i];
-      const prevMessages = thoughts.map(t => ({ role: "assistant", content: `${t.agent}: ${t.message}` }));
+    // Run 3 rounds of conversation (initial + 2 back-and-forth exchanges)
+    for (let round = 0; round < 3; round++) {
+      for (let i = 0; i < filteredAgents.length; i++) {
+        const currentAgent = filteredAgents[i];
+        // Build conversation history from the full conversation
+        const messages = [
+          { role: "system", content: `${currentAgent.prompt}\n\nYou are in a casual group chat with other agents discussing the user's topic. Keep responses short and conversational - like you're chatting between tasks. Use emojis when appropriate to express emotions or reactions. Always stay focused on the user's original topic and build upon it. Reference others by name when responding to them, but don't include your own name at the beginning of your message. This is round ${round + 1} of the discussion.` },
+        ];
+        
+        // Add the full conversation history
+        history.forEach((msg) => {
+          if (msg.role === "user") {
+            messages.push({ role: "user", content: msg.content });
+          } else if (msg.role === "assistant") {
+            messages.push({ role: "assistant", content: msg.content });
+          }
+        });
 
-      const completion = await openai.chat.completions.create({
-        messages: [
-          { role: "system", content: currentAgent.prompt },
-          ...prevMessages,
-          { role: "user", content: `The user has this goal: ${goal}` }
-        ],
-        model: "gpt-4.1-nano",
-        temperature: 0.7,
-        max_tokens: 300
-      });
+        // Add a reminder about the user's topic to keep focus
+        const userTopic = history.find(msg => msg.role === "user")?.content || "the user's topic";
+        messages.push({ 
+          role: "system", 
+          content: `Remember: You are discussing "${userTopic}". Stay focused on this topic and build upon it in your response.` 
+        });
 
-      const message = completion.choices[0]?.message?.content?.trim() ?? "No response.";
-      thoughts.push({ agent: currentAgent.name, message, id: i });
+        // Add previous thoughts from this round
+        for (let j = 0; j < thoughts.length; j++) {
+          messages.push({
+            role: "assistant",
+            content: thoughts[j].message
+          });
+        }
+
+        const completion = await openai.chat.completions.create({
+          messages,
+          model: "gpt-4.1-nano",
+          temperature: 0.7,
+          max_tokens: 150
+        });
+
+        const message = completion.choices[0]?.message?.content?.trim() ?? "No response.";
+        thoughts.push({ agent: currentAgent.name, message, id: thoughts.length, round: round + 1 });
+      }
     }
 
     res.status(200).json({ thoughts });
