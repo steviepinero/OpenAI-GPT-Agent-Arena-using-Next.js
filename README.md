@@ -1,9 +1,7 @@
 
 🚀 Project Overview
 OpenAI Agent Arena is a multi-agent conversational system powered by OpenAI's API. Each agent is assigned a unique persona and skillset, and they work together to brainstorm, debate, and generate solutions in real time.
-
-Think: “GPT-4, but with coworkers.”
-
+-------------
 This project is designed as both a showcase and a playground for:
 
 🔁 Multi-agent prompt chaining
@@ -13,23 +11,23 @@ This project is designed as both a showcase and a playground for:
 📊 Real-time message streaming
 
 🧠 Simulated reasoning and disagreement
-
+---------------------------
 ✨ Key Features
-Customizable Agent Personas
+Customizable Agent Personas: 
 Each agent has its own name, background, speaking style, and system prompt.
 
-Live Message Typing Simulation
+Live Message Typing Simulation:
 See each agent think and respond in real time with a fully animated typing effect.
 
-Selective Agent Participation
+Selective Agent Participation:
 Pick which agents are active for any conversation. The rest sit out.
 
-Iterative Dialogue
+Iterative Dialogue:
 Agents take turns building on each other’s ideas — not just responding to the user.
 
-Gradient Chat Bubbles
+Gradient Chat Bubbles:
 Every agent has its own visual identity, so you always know who’s speaking.
-
+----------------------------
 🛠️ Tech Stack
 Frontend: Next.js, Tailwind CSS
 
@@ -38,7 +36,7 @@ Backend: OpenAI GPT API
 Architecture: Client-side message handling with dynamic agent orchestration
 
 State Management: React hooks
-
+-----------------------------
 🧪 Experimental Goals
 This project serves as a prototype for more advanced ideas in:
 
@@ -49,9 +47,7 @@ Role-based problem solving
 AI self-debate and consensus modeling
 
 Transparent agent deliberation chains
-
-📸 Preview
-
+----------------------------------------
 🔮 What's Next
  Add a moderator/arbiter agent
 
