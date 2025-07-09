@@ -1,5 +1,6 @@
 
 🚀 Project Overview
+-----------------------
 OpenAI Agent Arena is a multi-agent conversational system powered by OpenAI's API. Each agent is assigned a unique persona and skillset, and they work together to brainstorm, debate, and generate solutions in real time.
 -------------
 This project is designed as both a showcase and a playground for:
