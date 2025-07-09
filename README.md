@@ -1,3 +1,17 @@
+
+
+This program will allow you to ask a question, and have 3 different AI agents discuss it with you and among themselves as well.
+
+After the last agent speaks, you can send a follow up message
+
+Refreshing the page will clear the chat histroy, treating it like a new conversation
+
+
+
+![image](https://github.com/user-attachments/assets/6c3d8bc8-4d99-4a1f-9dc0-77b29d0ae079)
+
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
 
 ## Getting Started
