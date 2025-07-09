@@ -19,6 +19,15 @@ const AGENTS = [
 ];
 
 export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method !== "POST") return res.status(405).end();
 
   const { history, selectedAgents } = req.body;
@@ -28,49 +37,47 @@ export default async function handler(req, res) {
     const filteredAgents = AGENTS.filter((a) => selectedAgents.includes(a.name));
     const thoughts = [];
 
-    // Run 3 rounds of conversation (initial + 2 back-and-forth exchanges)
-    for (let round = 0; round < 3; round++) {
-      for (let i = 0; i < filteredAgents.length; i++) {
-        const currentAgent = filteredAgents[i];
-        // Build conversation history from the full conversation
-        const messages = [
-          { role: "system", content: `${currentAgent.prompt}\n\nYou are in a casual group chat with other agents discussing the user's topic. Keep responses short and conversational - like you're chatting between tasks. Use emojis when appropriate to express emotions or reactions. Always stay focused on the user's original topic and build upon it. Reference others by name when responding to them, but don't include your own name at the beginning of your message. This is round ${round + 1} of the discussion.` },
-        ];
-        
-        // Add the full conversation history
-        history.forEach((msg) => {
-          if (msg.role === "user") {
-            messages.push({ role: "user", content: msg.content });
-          } else if (msg.role === "assistant") {
-            messages.push({ role: "assistant", content: msg.content });
-          }
-        });
-
-        // Add a reminder about the user's topic to keep focus
-        const userTopic = history.find(msg => msg.role === "user")?.content || "the user's topic";
-        messages.push({ 
-          role: "system", 
-          content: `Remember: You are discussing "${userTopic}". Stay focused on this topic and build upon it in your response.` 
-        });
-
-        // Add previous thoughts from this round
-        for (let j = 0; j < thoughts.length; j++) {
-          messages.push({
-            role: "assistant",
-            content: thoughts[j].message
-          });
+    // Run 1 round of conversation (each agent responds once)
+    for (let i = 0; i < filteredAgents.length; i++) {
+      const currentAgent = filteredAgents[i];
+      // Build conversation history from the full conversation
+      const messages = [
+        { role: "system", content: `${currentAgent.prompt}\n\nYou are in a casual group chat with other agents discussing the user's topic. Keep responses short and conversational - like you're chatting between tasks. Use emojis when appropriate to express emotions or reactions. Always stay focused on the user's original topic and build upon it. Reference others by name when responding to them, but don't include your own name at the beginning of your message.` },
+      ];
+      
+      // Add the full conversation history
+      history.forEach((msg) => {
+        if (msg.role === "user") {
+          messages.push({ role: "user", content: msg.content });
+        } else if (msg.role === "assistant") {
+          messages.push({ role: "assistant", content: msg.content });
         }
+      });
 
-        const completion = await openai.chat.completions.create({
-          messages,
-          model: "gpt-4.1-nano",
-          temperature: 0.7,
-          max_tokens: 150
+      // Add a reminder about the user's topic to keep focus
+      const userTopic = history.find(msg => msg.role === "user")?.content || "the user's topic";
+      messages.push({ 
+        role: "system", 
+        content: `Remember: You are discussing "${userTopic}". Stay focused on this topic and build upon it in your response.` 
+      });
+
+      // Add previous thoughts from this round
+      for (let j = 0; j < thoughts.length; j++) {
+        messages.push({
+          role: "assistant",
+          content: thoughts[j].message
         });
-
-        const message = completion.choices[0]?.message?.content?.trim() ?? "No response.";
-        thoughts.push({ agent: currentAgent.name, message, id: thoughts.length, round: round + 1 });
       }
+
+      const completion = await openai.chat.completions.create({
+        messages,
+        model: "gpt-4.1-nano",
+        temperature: 0.7,
+        max_tokens: 150
+      });
+
+      const message = completion.choices[0]?.message?.content?.trim() ?? "No response.";
+      thoughts.push({ agent: currentAgent.name, message, id: i });
     }
 
     res.status(200).json({ thoughts });

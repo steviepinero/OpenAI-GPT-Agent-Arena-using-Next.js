@@ -109,3 +109,8 @@
 2025-07-09T02:01:47.281Z - ✅ Verified lucide-react at C:\Users\stevi\Documents\openaiagentnextjs\node_modules\lucide-react\dist\cjs\lucide-react.js | SHA256: 1fdec6d8314da3c717fe63d115b8d3d889edb6a7f6bf4d10f2bc5a348b3bca79
 2025-07-09T02:01:47.283Z - ✅ Verified clsx at C:\Users\stevi\Documents\openaiagentnextjs\node_modules\clsx\dist\clsx.js | SHA256: a2ba9f4c5fe36617aa930a5269bd910a2cafc7066398835d63cf3733f5c0651a
 2025-07-09T02:01:47.283Z - 🏁 Dependency check + install completed in 0.01s
+2025-07-09T03:29:05.456Z - ✅ Verified react-markdown at C:\Users\stevi\Documents\openaiagentnextjs\node_modules\react-markdown\index.js | SHA256: 2bb94d0e974fc300c14512152ab9b6ca6eadc951c9415197d523d1f566df4494
+2025-07-09T03:29:05.460Z - ✅ Verified framer-motion at C:\Users\stevi\Documents\openaiagentnextjs\node_modules\framer-motion\dist\cjs\index.js | SHA256: faeb71c443861eb29a96a6f0119a4ac7bf1aecf940f207c87bc370ee6a2f34ff
+2025-07-09T03:29:05.463Z - ✅ Verified lucide-react at C:\Users\stevi\Documents\openaiagentnextjs\node_modules\lucide-react\dist\cjs\lucide-react.js | SHA256: 1fdec6d8314da3c717fe63d115b8d3d889edb6a7f6bf4d10f2bc5a348b3bca79
+2025-07-09T03:29:05.465Z - ✅ Verified clsx at C:\Users\stevi\Documents\openaiagentnextjs\node_modules\clsx\dist\clsx.js | SHA256: a2ba9f4c5fe36617aa930a5269bd910a2cafc7066398835d63cf3733f5c0651a
+2025-07-09T03:29:05.465Z - 🏁 Dependency check + install completed in 0.01s
