@@ -1,7 +1,7 @@
 // pages/index.js
 import React, { useState, useEffect, useRef } from "react";
-import AgentBubble from "../components/agentbubble";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+// Removed unused AgentBubble and AnimatePresence imports
 import Spinner from "../components/ui/spinner";
 
 const AGENT_DETAILS = {
