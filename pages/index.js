@@ -1,5 +1,5 @@
 // pages/index.js
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import AgentBubble from "../components/agentbubble";
 import { motion, AnimatePresence } from "framer-motion";
 import Spinner from "../components/ui/spinner";
@@ -87,7 +87,7 @@ export default function AutoSolve() {
   }, [threads, createThread]);
 
   // Load conversation history from active thread
-  const conversationHistory = activeThread?.messages || [];
+  const conversationHistory = useMemo(() => activeThread?.messages || [], [activeThread?.messages]);
 
   // When switching threads, scroll to bottom and reset UI state
   useEffect(() => {
