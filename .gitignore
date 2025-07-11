@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+DEMO_SCRIPT.md
+INTERVIEW_CHEATSHEET.md
+install.log
+install.log
+.gitignore

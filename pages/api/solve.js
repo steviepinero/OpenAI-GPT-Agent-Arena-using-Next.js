@@ -3,7 +3,7 @@ import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-const AGENTS = [
+const BUILT_IN_AGENTS = [
   {
     name: "Azazel",
     prompt: "You are Azazel, a ruthless tactician who cuts through nonsense. Answer with brutal logic and efficiency."
@@ -30,8 +30,22 @@ export default async function handler(req, res) {
 
   if (req.method !== "POST") return res.status(405).end();
 
-  const { history, selectedAgents } = req.body;
+  const { history, selectedAgents, customAgents } = req.body;
   if (!history || !selectedAgents) return res.status(400).json({ error: "Missing history or selected agents" });
+
+  // Build the AGENTS array using customAgents if present
+  let AGENTS = [];
+  for (const agentName of selectedAgents) {
+    // Try to find in customAgents first
+    let agentDef = null;
+    if (Array.isArray(customAgents)) {
+      agentDef = customAgents.find(a => a.name === agentName);
+    }
+    if (!agentDef) {
+      agentDef = BUILT_IN_AGENTS.find(a => a.name === agentName);
+    }
+    if (agentDef) AGENTS.push(agentDef);
+  }
 
   try {
     const filteredAgents = AGENTS.filter((a) => selectedAgents.includes(a.name));
