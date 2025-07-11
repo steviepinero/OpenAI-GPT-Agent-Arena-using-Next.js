@@ -1,112 +1,147 @@
+# AI Agent Panel Discussion
 
-🚀 Project Overview
------------------------
-OpenAI Agent Arena is a multi-agent conversational system powered by OpenAI's API. Each agent is assigned a unique persona and skillset, and they work together to brainstorm, debate, and generate solutions in real time.
--------------
-This project is designed as both a showcase and a playground for:
+A Next.js application featuring an AI-powered discussion panel with multiple agents engaging in dynamic conversations.
 
-🔁 Multi-agent prompt chaining
+## Features
 
-🧩 Modular agent architecture
+- 🤖 **Multi-Agent Conversations**: Three unique AI agents with distinct personalities
+- 💬 **Real-time Chat**: Interactive conversations with typing animations
+- 📚 **Conversation History**: Save and load previous chat threads
+- ⚙️ **Custom Agents**: Create, edit, and delete your own AI agents
+- 🎨 **Modern UI**: Beautiful, responsive design with smooth animations
+- 📱 **Mobile Friendly**: Works great on all devices
 
-📊 Real-time message streaming
+## Quick Start
 
-🧠 Simulated reasoning and disagreement
----------------------------
-✨ Key Features
-Customizable Agent Personas: 
-Each agent has its own name, background, speaking style, and system prompt.
-
-Live Message Typing Simulation:
-See each agent think and respond in real time with a fully animated typing effect.
-
-Selective Agent Participation:
-Pick which agents are active for any conversation. The rest sit out.
-
-Iterative Dialogue:
-Agents take turns building on each other’s ideas — not just responding to the user.
-
-Gradient Chat Bubbles:
-Every agent has its own visual identity, so you always know who’s speaking.
-----------------------------
-🛠️ Tech Stack
-Frontend: Next.js, Tailwind CSS
-
-Backend: OpenAI GPT API
-
-Architecture: Client-side message handling with dynamic agent orchestration
-
-State Management: React hooks
------------------------------
-🧪 Experimental Goals
-This project serves as a prototype for more advanced ideas in:
-
-Multi-agent epistemic reasoning
-
-Role-based problem solving
-
-AI self-debate and consensus modeling
-
-Transparent agent deliberation chains
-----------------------------------------
-🔮 What's Next
- Add a moderator/arbiter agent
-
- Enable memory for agents across turns
-
- Log internal thoughts or tool use per agent
-
- Export conversations for analysis
-
- Plug into real-world use cases (e.g. legal argument analysis, code review, product ideation)
-
-After the last agent speaks, you can send a follow up message
-
-Refreshing the page will clear the chat histroy, treating it like a new conversation
-
-
-
-![image](https://github.com/user-attachments/assets/6c3d8bc8-4d99-4a1f-9dc0-77b29d0ae079)
-
-
-
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+### Development
 
 ```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will be available at `http://localhost:3000`
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+### Production
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+```bash
+# Build for production
+npm run build
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+# Start production server
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment Setup
 
-## Learn More
+### Development
+- Development dependencies are automatically checked and installed
+- Hot reloading enabled
+- Debug information available
 
-To learn more about Next.js, take a look at the following resources:
+### Production
+- Development dependencies are excluded
+- Optimized builds with SWC minification
+- Source maps disabled for security
+- Telemetry disabled
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+## Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Agent Management
+- **Built-in Agents**: Azazel, Isaac, and Lazuras with unique personalities
+- **Custom Agents**: Create your own agents with custom names, personas, and avatars
+- **Agent Selection**: Choose how many agents participate (1-5)
+- **Edit & Delete**: Full CRUD operations for custom agents
 
-## Deploy on Vercel
+### Conversation Features
+- **Real-time Chat**: Send messages and watch agents respond
+- **Conversation History**: All chats are saved locally
+- **Export Conversations**: Download conversations as text files
+- **Copy Messages**: Copy individual agent responses to clipboard
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### UI/UX
+- **Responsive Design**: Works on desktop, tablet, and mobile
+- **Smooth Animations**: Framer Motion powered transitions
+- **Modern Interface**: Clean, intuitive design
+- **Accessibility**: Keyboard navigation and screen reader support
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+## Tech Stack
+
+- **Framework**: Next.js 15
+- **React**: 19
+- **Styling**: Tailwind CSS 4
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
+- **AI**: OpenAI GPT API
+
+## Project Structure
+
+```
+├── components/          # React components
+│   ├── ui/             # Reusable UI components
+│   └── agentbubble.js  # Agent message component
+├── pages/              # Next.js pages
+│   ├── api/            # API routes
+│   ├── index.js        # Main chat page
+│   └── options.js      # Settings page
+├── lib/                # Utility functions
+├── public/             # Static assets
+└── styles/             # Global styles
+```
+
+## API Routes
+
+- `/api/solve` - Main chat endpoint for agent responses
+- `/api/logMessage` - Server-side message logging
+
+## Configuration
+
+### Custom Agents
+1. Go to Options page (gear icon in conversation modal)
+2. Click "Create Custom Agent"
+3. Fill in name, persona, and avatar
+4. Save and select for conversations
+
+### Bot Count
+- Adjust the slider in Options to change how many agents participate
+- Must select exactly the number of bots you want to use
+
+## Deployment
+
+### Vercel (Recommended)
+```bash
+# Deploy to Vercel
+vercel --prod
+```
+
+### Other Platforms
+```bash
+# Build the application
+npm run build
+
+# Start production server
+npm start
+```
+
+## Environment Variables
+
+Create a `.env.local` file for local development:
+
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## License
+
+MIT License - see LICENSE file for details
