@@ -233,20 +233,48 @@ export default function AutoSolve() {
     setTypingAgent(null);
   };
 
-  // Export conversation as text file
-  const exportConversation = () => {
+  // Export conversation in multiple formats
+  const exportConversation = (format = 'txt') => {
     if (!activeThread || !activeThread.messages.length) return;
-    const lines = activeThread.messages.map(msg => {
-      const time = msg.timestamp ? `[${msg.timestamp}] ` : '';
-      const role = msg.role === 'user' ? 'User' : (msg.agent || 'Agent');
-      return `${time}${role}: ${msg.content}`;
-    });
-    const text = lines.join('\n');
-    const blob = new Blob([text], { type: 'text/plain' });
+    
+    let content, mimeType, extension;
+    
+    if (format === 'json') {
+      content = JSON.stringify({
+        title: activeThread.title,
+        timestamp: activeThread.timestamp,
+        messages: activeThread.messages
+      }, null, 2);
+      mimeType = 'application/json';
+      extension = 'json';
+    } else if (format === 'csv') {
+      const headers = ['Timestamp', 'Role', 'Agent', 'Content'];
+      const rows = activeThread.messages.map(msg => [
+        msg.timestamp || '',
+        msg.role,
+        msg.agent || '',
+        `"${msg.content.replace(/"/g, '""')}"`
+      ]);
+      content = [headers, ...rows].map(row => row.join(',')).join('\n');
+      mimeType = 'text/csv';
+      extension = 'csv';
+    } else {
+      // Default text format
+      const lines = activeThread.messages.map(msg => {
+        const time = msg.timestamp ? `[${msg.timestamp}] ` : '';
+        const role = msg.role === 'user' ? 'User' : (msg.agent || 'Agent');
+        return `${time}${role}: ${msg.content}`;
+      });
+      content = lines.join('\n');
+      mimeType = 'text/plain';
+      extension = 'txt';
+    }
+    
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = (activeThread.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'conversation') + '.txt';
+    a.download = (activeThread.title?.replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'conversation') + '.' + extension;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
@@ -282,18 +310,44 @@ export default function AutoSolve() {
               </p>
             </div>
           </div>
-          {/* Save (export) button on the right */}
-          <button
-            className="ml-4 bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition flex items-center justify-center"
-            onClick={exportConversation}
-            title="Save conversation as text file"
-            disabled={!activeThread || !activeThread.messages.length}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-              <path d="M17 3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3zm-2 0v4H5V3h10zM5 17v-6h10v6H5z" />
-              <rect x="7" y="13" width="6" height="2" rx="1" />
-            </svg>
-          </button>
+          {/* Export dropdown on the right */}
+          <div className="ml-4 relative group">
+            <button
+              className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition flex items-center justify-center"
+              title="Export conversation"
+              disabled={!activeThread || !activeThread.messages.length}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                <path d="M17 3a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3zm-2 0v4H5V3h10zM5 17v-6h10v6H5z" />
+                <rect x="7" y="13" width="6" height="2" rx="1" />
+              </svg>
+              <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="py-1">
+                <button
+                  onClick={() => exportConversation('txt')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Export as Text (.txt)
+                </button>
+                <button
+                  onClick={() => exportConversation('json')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Export as JSON (.json)
+                </button>
+                <button
+                  onClick={() => exportConversation('csv')}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Export as CSV (.csv)
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       {/* Main content area with messages */}

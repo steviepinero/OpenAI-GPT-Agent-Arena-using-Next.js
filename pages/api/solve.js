@@ -30,7 +30,7 @@ export default async function handler(req, res) {
 
   if (req.method !== "POST") return res.status(405).end();
 
-  const { history, selectedAgents, customAgents } = req.body;
+  const { history, selectedAgents, customAgents, stream = false } = req.body;
   if (!history || !selectedAgents) return res.status(400).json({ error: "Missing history or selected agents" });
 
   // Build the AGENTS array using customAgents if present
