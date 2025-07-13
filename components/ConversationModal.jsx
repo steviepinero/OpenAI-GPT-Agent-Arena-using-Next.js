@@ -31,7 +31,10 @@ export default function ConversationModal({ open, onClose }) {
             transition={{ type: "spring", stiffness: 260, damping: 22, duration: 0.22 }}
           >
             <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-semibold">Conversations</h2>
+              <div className="flex items-center">
+                <h2 className="text-lg font-semibold">📁 Saved Chats</h2>
+                <span className="ml-2 text-sm text-gray-500">({threads.length})</span>
+              </div>
               <div className="flex items-center gap-2">
                 <Link href="/analytics" legacyBehavior>
                   <a title="Analytics" className="text-gray-500 hover:text-gray-800 text-xl px-2">
@@ -58,7 +61,11 @@ export default function ConversationModal({ open, onClose }) {
             </div>
             <div className="max-h-96 overflow-y-auto divide-y">
               {threads.length === 0 && (
-                <div className="p-6 text-center text-gray-400">No conversations yet.</div>
+                <div className="p-6 text-center text-gray-400">
+                  <div className="text-4xl mb-2">📝</div>
+                  <p>No conversations yet.</p>
+                  <p className="text-sm mt-1">Start chatting to see your history here!</p>
+                </div>
               )}
               {threads.map((thread) => (
                 <div
@@ -101,7 +108,7 @@ export default function ConversationModal({ open, onClose }) {
                         e.stopPropagation();
                         deleteThread(thread.id);
                       }}
-                      title="Delete"
+                      title="Delete this conversation"
                     >
                       Delete
                     </button>
@@ -111,14 +118,21 @@ export default function ConversationModal({ open, onClose }) {
             </div>
             <div className="p-4 border-t flex justify-between items-center">
               <button
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition flex items-center"
                 onClick={() => {
                   createThread();
                   onClose();
                 }}
+                title="Start a new conversation"
               >
-                + New Conversation
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Chat
               </button>
+              <div className="text-xs text-gray-500">
+                {threads.length} conversation{threads.length !== 1 ? 's' : ''}
+              </div>
             </div>
           </motion.div>
         </motion.div>

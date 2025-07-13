@@ -42,6 +42,9 @@ export default function AutoSolve() {
   const messagesContainerRef = useRef(null);
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [copyErrorIndex, setCopyErrorIndex] = useState(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastType, setToastType] = useState("success");
 
   // Conversation management
   const {
@@ -237,7 +240,7 @@ export default function AutoSolve() {
   const exportConversation = (format = 'txt') => {
     if (!activeThread || !activeThread.messages.length) return;
     
-    let content, mimeType, extension;
+    let content, mimeType, extension, formatName;
     
     if (format === 'json') {
       content = JSON.stringify({
@@ -247,6 +250,7 @@ export default function AutoSolve() {
       }, null, 2);
       mimeType = 'application/json';
       extension = 'json';
+      formatName = 'JSON';
     } else if (format === 'csv') {
       const headers = ['Timestamp', 'Role', 'Agent', 'Content'];
       const rows = activeThread.messages.map(msg => [
@@ -258,6 +262,7 @@ export default function AutoSolve() {
       content = [headers, ...rows].map(row => row.join(',')).join('\n');
       mimeType = 'text/csv';
       extension = 'csv';
+      formatName = 'CSV';
     } else {
       // Default text format
       const lines = activeThread.messages.map(msg => {
@@ -268,6 +273,7 @@ export default function AutoSolve() {
       content = lines.join('\n');
       mimeType = 'text/plain';
       extension = 'txt';
+      formatName = 'Text';
     }
     
     const blob = new Blob([content], { type: mimeType });
@@ -281,12 +287,32 @@ export default function AutoSolve() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }, 100);
+    
+    // Show success toast
+    setToastMessage(`✅ Conversation saved as ${formatName} file`);
+    setToastType("success");
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
   };
 
   return (
     <div className="h-screen bg-gray-100 text-black flex flex-col">
       {/* Modal for conversation list */}
       <ConversationModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      
+      {/* Toast notification */}
+      {showToast && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className={`px-4 py-3 rounded-lg shadow-lg text-white ${
+            toastType === "success" ? "bg-green-500" : "bg-red-500"
+          }`}>
+            <div className="flex items-center">
+              <span className="mr-2">{toastType === "success" ? "✅" : "❌"}</span>
+              <span className="text-sm font-medium">{toastMessage}</span>
+            </div>
+          </div>
+        </div>
+      )}
       {/* iMessage-style header */}
       <div className="p-4 border-b bg-white shadow-sm">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
@@ -294,10 +320,10 @@ export default function AutoSolve() {
           <button
             className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition flex items-center justify-center mr-4"
             onClick={() => setModalOpen(true)}
-            title="View Conversations"
+            title="View saved chats"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
           </button>
           {/* Centered title and description */}
@@ -314,7 +340,7 @@ export default function AutoSolve() {
           <div className="ml-4 relative group">
             <button
               className="bg-blue-500 text-white px-3 py-2 rounded-lg hover:bg-blue-600 transition flex items-center justify-center"
-              title="Export conversation"
+              title="Save chat as file"
               disabled={!activeThread || !activeThread.messages.length}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
@@ -330,18 +356,21 @@ export default function AutoSolve() {
                 <button
                   onClick={() => exportConversation('txt')}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  title="Save as plain text file"
                 >
                   Export as Text (.txt)
                 </button>
                 <button
                   onClick={() => exportConversation('json')}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  title="Save as JSON data file"
                 >
                   Export as JSON (.json)
                 </button>
                 <button
                   onClick={() => exportConversation('csv')}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  title="Save as spreadsheet file"
                 >
                   Export as CSV (.csv)
                 </button>
