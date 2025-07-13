@@ -7,6 +7,7 @@ export default function Analytics() {
     totalConversations: 0,
     totalMessages: 0,
     agentUsage: {},
+    agentWordCounts: {},
     popularTopics: [],
     averageResponseTime: 0,
     userEngagement: 0
@@ -26,10 +27,17 @@ export default function Analytics() {
         
         // Agent usage analysis
         const agentUsage = {};
+        const agentWordCounts = {};
+        
         threads.forEach(thread => {
           thread.messages.forEach(msg => {
             if (msg.agent) {
+              // Count messages
               agentUsage[msg.agent] = (agentUsage[msg.agent] || 0) + 1;
+              
+              // Count words
+              const wordCount = msg.content ? msg.content.trim().split(/\s+/).length : 0;
+              agentWordCounts[msg.agent] = (agentWordCounts[msg.agent] || 0) + wordCount;
             }
           });
         });
@@ -44,6 +52,7 @@ export default function Analytics() {
           totalConversations,
           totalMessages,
           agentUsage,
+          agentWordCounts,
           popularTopics: topics,
           averageResponseTime: totalMessages > 0 ? Math.round(totalMessages / totalConversations * 10) / 10 : 0,
           userEngagement: totalConversations > 0 ? Math.round((totalMessages / totalConversations) * 10) / 10 : 0
@@ -59,6 +68,9 @@ export default function Analytics() {
   }, []);
 
   const topAgent = Object.entries(analytics.agentUsage)
+    .sort(([,a], [,b]) => b - a)[0];
+
+  const mostVerboseAgent = Object.entries(analytics.agentWordCounts)
     .sort(([,a], [,b]) => b - a)[0];
 
   if (loading) {
@@ -170,28 +182,80 @@ export default function Analytics() {
             <div className="space-y-4">
               {Object.entries(analytics.agentUsage)
                 .sort(([,a], [,b]) => b - a)
-                .map(([agent, count]) => (
-                  <div key={agent} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <span className="text-lg mr-3">
-                        {agent === "Azazel" ? "🗡️" : agent === "Isaac" ? "🧠" : agent === "Lazuras" ? "⚡" : "🤖"}
-                      </span>
-                      <span className="font-medium">{agent}</span>
-                      {topAgent && topAgent[0] === agent && (
-                        <span className="ml-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Top Performer</span>
-                      )}
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-32 bg-gray-200 rounded-full h-2 mr-3">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
-                          style={{ width: `${(count / Math.max(...Object.values(analytics.agentUsage))) * 100}%` }}
-                        ></div>
+                .map(([agent, count]) => {
+                  const wordCount = analytics.agentWordCounts[agent] || 0;
+                  const avgWordsPerMessage = count > 0 ? Math.round(wordCount / count) : 0;
+                  const isTopPerformer = topAgent && topAgent[0] === agent;
+                  const isMostVerbose = mostVerboseAgent && mostVerboseAgent[0] === agent;
+                  
+                  return (
+                    <div key={agent} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center">
+                        <span className="text-lg mr-3">
+                          {agent === "Azazel" ? "🗡️" : agent === "Isaac" ? "🧠" : agent === "Lazuras" ? "⚡" : "🤖"}
+                        </span>
+                        <div>
+                          <span className="font-medium">{agent}</span>
+                          <div className="flex gap-2 mt-1">
+                            {isTopPerformer && (
+                              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Top Performer</span>
+                            )}
+                            {isMostVerbose && (
+                              <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Most Verbose</span>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <span className="text-sm text-gray-600 w-12 text-right">{count}</span>
+                      <div className="flex items-center gap-6">
+                        <div className="text-right">
+                          <div className="text-sm text-gray-600">Messages</div>
+                          <div className="font-semibold">{count}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-gray-600">Total Words</div>
+                          <div className="font-semibold">{wordCount.toLocaleString()}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm text-gray-600">Avg Words/Message</div>
+                          <div className="font-semibold">{avgWordsPerMessage}</div>
+                        </div>
+                        <div className="flex items-center">
+                          <div className="w-32 bg-gray-200 rounded-full h-2 mr-3">
+                            <div 
+                              className="bg-blue-600 h-2 rounded-full" 
+                              style={{ width: `${(count / Math.max(...Object.values(analytics.agentUsage))) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
+            </div>
+          </div>
+
+          {/* Word Count Summary */}
+          <div className="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 className="text-lg font-semibold mb-4">Communication Patterns</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-blue-50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">
+                  {Object.values(analytics.agentWordCounts).reduce((sum, count) => sum + count, 0).toLocaleString()}
+                </div>
+                <div className="text-sm text-gray-600">Total Words Generated</div>
+              </div>
+              <div className="text-center p-4 bg-green-50 rounded-lg">
+                <div className="text-2xl font-bold text-green-600">
+                  {analytics.totalMessages > 0 ? Math.round(Object.values(analytics.agentWordCounts).reduce((sum, count) => sum + count, 0) / analytics.totalMessages) : 0}
+                </div>
+                <div className="text-sm text-gray-600">Avg Words per Message</div>
+              </div>
+              <div className="text-center p-4 bg-purple-50 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600">
+                  {mostVerboseAgent ? mostVerboseAgent[0] : 'N/A'}
+                </div>
+                <div className="text-sm text-gray-600">Most Verbose Agent</div>
+              </div>
             </div>
           </div>
 
