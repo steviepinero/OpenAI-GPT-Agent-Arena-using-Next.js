@@ -150,7 +150,7 @@ function testConversationModal() {
     {
       name: 'Long title',
       title: mockThreads[2].title,
-      expected: 'Very long conversation title that should be truncat...'
+      expected: 'Very long conversation title that should...'
     }
   ];
 
